@@ -1,7 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
-
+require("dotenv").config(); // пакет для process.env шукає файл env і додає змінні оточення
 const contactsRouter = require("./routes/api/contacts");
 
 const app = express();
