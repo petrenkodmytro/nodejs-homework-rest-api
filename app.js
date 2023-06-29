@@ -8,6 +8,7 @@ const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
+// логування (запис) исторії запитів
 app.use(logger(formatsLogger));
 app.use(cors());
 
