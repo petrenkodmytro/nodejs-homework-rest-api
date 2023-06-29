@@ -1,15 +1,16 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
-require("dotenv").config(); // пакет для process.env шукає файл env і додає змінні оточення
+// пакет для process.env шукає файл env і додає змінні оточення
+require("dotenv").config(); 
 const contactsRouter = require("./routes/api/contacts");
 
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-
-// логування (запис) исторії запитів
+// логування (запис) історії запитів
 app.use(logger(formatsLogger));
+
 app.use(cors());
 
 // мідлвара перевіряє формат данних у тілі запиту
