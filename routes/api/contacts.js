@@ -1,7 +1,5 @@
 const express = require("express");
-
 const router = express.Router();
-
 const ctrl = require("../../controllers/contacts");
 
 router.get("/", ctrl.getListContacts);
@@ -10,8 +8,8 @@ router.get("/:contactId", ctrl.getContactById);
 
 router.post("/", ctrl.addContact);
 
-router.delete("/:contactId", ctrl.removeContact);
+// router.delete("/:contactId", ctrl.removeContact);
 
-router.put("/:contactId", ctrl.updateById);
+// router.put("/:contactId", ctrl.updateById);
 
 module.exports = router;

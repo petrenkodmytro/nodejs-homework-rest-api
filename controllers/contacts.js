@@ -1,22 +1,16 @@
-const contacts = require("../models/contacts");
+const { Contact, addSchema } = require("../models/contact");
 const { HttpError, ctrlWrapper } = require("../helpers");
-const Joi = require("joi");
-
-// опис вимог до об'єктів (зразок proptypes)
-const addSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  phone: Joi.string().required(),
-});
 
 const getListContacts = async (req, res) => {
-  const result = await contacts.getListContacts();
+  // find - знаходить і повертає всі об'єкти з колекції
+  const result = await Contact.find(); 
   res.json(result);
 };
 
 const getContactById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await contacts.getContactById(contactId);
+  const result = await Contact.findOne({_id: contactId});
+  // const result = await Contact.findById(contactId);
   if (!result) {
     throw HttpError(404, "Contact not found"); // створили об'єкт помилки
   }
@@ -29,41 +23,41 @@ const addContact = async (req, res) => {
   if (error) {
     throw HttpError(400, error.message);
   }
-  const result = await contacts.addContact(req.body);
+  const result = await Contact.create(req.body);
   res.status(201).json(result);
 };
 
-const removeContact = async (req, res) => {
-  const { contactId } = req.params;
-  const result = await contacts.removeContact(contactId);
-  if (!result) {
-    throw HttpError(404, "Contact not found"); // створили об'єкт помилки
-  }
-  res.json(result);
-};
+// const removeContact = async (req, res) => {
+//   const { contactId } = req.params;
+//   const result = await contacts.removeContact(contactId);
+//   if (!result) {
+//     throw HttpError(404, "Contact not found"); // створили об'єкт помилки
+//   }
+//   res.json(result);
+// };
 
-const updateById = async (req, res, next) => {
-  try {
-    const { error } = addSchema.validate(req.body);
-    // валідація, якщо все добре error = undefined
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const { contactId } = req.params;
-    const result = await contacts.updateById(contactId, req.body);
-    if (!result) {
-      throw HttpError(404, "Contact not found"); // створили об'єкт помилки
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
-};
+// const updateById = async (req, res, next) => {
+//   try {
+//     const { error } = addSchema.validate(req.body);
+//     // валідація, якщо все добре error = undefined
+//     if (error) {
+//       throw HttpError(400, error.message);
+//     }
+//     const { contactId } = req.params;
+//     const result = await contacts.updateById(contactId, req.body);
+//     if (!result) {
+//       throw HttpError(404, "Contact not found"); // створили об'єкт помилки
+//     }
+//     res.json(result);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 module.exports = {
   getListContacts: ctrlWrapper(getListContacts),
   getContactById: ctrlWrapper(getContactById),
   addContact: ctrlWrapper(addContact),
-  removeContact: ctrlWrapper(removeContact),
-  updateById, // для прикладу залишив першочерговий стан
+  // removeContact: ctrlWrapper(removeContact),
+  // updateById, // для прикладу залишив першочерговий стан
 };
