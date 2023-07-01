@@ -3,7 +3,7 @@ const { HttpError, ctrlWrapper } = require("../helpers");
 
 const getListContacts = async (req, res) => {
   // find - знаходить і повертає всі об'єкти з колекції
-  const result = await Contact.find();
+  const result = await Contact.find({}, "-createdAt -updatedAt");
   res.json(result);
 };
 
@@ -12,7 +12,7 @@ const getContactById = async (req, res) => {
   // const result = await Contact.findOne({_id: contactId});
   const result = await Contact.findById(contactId);
   if (!result) {
-    throw HttpError(404, "Contact not found"); // створили об'єкт помилки
+    throw HttpError(404, "Contact not found");
   }
   res.json(result);
 };
@@ -31,7 +31,7 @@ const removeContact = async (req, res) => {
   const { contactId } = req.params;
   const result = await Contact.findByIdAndRemove(contactId);
   if (!result) {
-    throw HttpError(404, "Contact not found"); // створили об'єкт помилки
+    throw HttpError(404, "Contact not found");
   }
   res.json(result);
 };
@@ -45,7 +45,7 @@ const updateById = async (req, res, next) => {
   const { contactId } = req.params;
   const result = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
   if (!result) {
-    throw HttpError(404, "Contact not found"); // створили об'єкт помилки
+    throw HttpError(404, "Contact not found");
   }
   res.json(result);
 };
@@ -59,7 +59,7 @@ const updateFavorite = async (req, res, next) => {
   const { contactId } = req.params;
   const result = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
   if (!result) {
-    throw HttpError(404, "Contact not found"); // створили об'єкт помилки
+    throw HttpError(404, "Contact not found");
   }
   res.json(result);
 };
@@ -70,5 +70,5 @@ module.exports = {
   addContact: ctrlWrapper(addContact),
   updateFavorite: ctrlWrapper(updateFavorite),
   removeContact: ctrlWrapper(removeContact),
-  updateById: ctrlWrapper(updateById), // для прикладу залишив першочерговий стан
+  updateById: ctrlWrapper(updateById),
 };

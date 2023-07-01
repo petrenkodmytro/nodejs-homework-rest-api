@@ -2,13 +2,14 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const contactsRouter = require("./routes/api/contacts");
+
 // пакет для process.env шукає файл env і додає змінні оточення
 require("dotenv").config();
 
 const app = express();
 
-const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 // логування (запис) історії запитів
+const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 
 // дозволяємо кросдоменні запити

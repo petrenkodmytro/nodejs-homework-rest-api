@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("../helpers");
+const { handleMongooseError } = require("../middlewares");
 const Joi = require("joi");
 
 // опис вимог до об'єктів, що приходять від користувача (зразок proptypes)
@@ -36,7 +36,7 @@ const contactSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-// до схеми додаємо мідлвар, якщо при спробі збереження винекне помилка, тоді відпрацює handleMongooseError
+// якщо при спробі збереження винекне помилка, тоді відпрацює мідлвар handleMongooseError
 contactSchema.post("save", handleMongooseError);
 
 // модель - клас який буде працювати з колекцією
