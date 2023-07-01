@@ -5,9 +5,13 @@ const Joi = require("joi");
 // опис вимог до об'єктів, що приходять від користувача (зразок proptypes)
 const addSchema = Joi.object({
   name: Joi.string().required(),
-  email: Joi.string().email().required(),
+  email: Joi.string().email(),
   phone: Joi.string().required(),
   favorite: Joi.boolean().default(false),
+});
+
+const updateFavoriteSchema = Joi.object({
+  favorite: Joi.boolean().required(),
 });
 
 // опис вимог до об'єктів, що зберігається у базі
@@ -32,11 +36,11 @@ const contactSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-// до схеми додаємо мідлвар присвоєння 400 статусу
+// до схеми додаємо мідлвар, якщо при спробі збереження винекне помилка, тоді відпрацює handleMongooseError
 contactSchema.post("save", handleMongooseError);
 
 // модель - клас який буде працювати з колекцією
 // "contact" - mongoose сам переводе у множину, якщо немає такої бази, то сам її створить!!!
 const Contact = model("contact", contactSchema);
 
-module.exports = { Contact, addSchema };
+module.exports = { Contact, addSchema, updateFavoriteSchema };
