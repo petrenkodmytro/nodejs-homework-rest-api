@@ -37,39 +37,31 @@ const removeContact = async (req, res) => {
 };
 
 const updateById = async (req, res, next) => {
-  try {
-    const { error } = addSchema.validate(req.body);
-    // валідація, якщо все добре error = undefined
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const { contactId } = req.params;
-    const result = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
-    if (!result) {
-      throw HttpError(404, "Contact not found"); // створили об'єкт помилки
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
+  const { error } = addSchema.validate(req.body);
+  // валідація, якщо все добре error = undefined
+  if (error) {
+    throw HttpError(400, error.message);
   }
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
+  if (!result) {
+    throw HttpError(404, "Contact not found"); // створили об'єкт помилки
+  }
+  res.json(result);
 };
 
 const updateFavorite = async (req, res, next) => {
-  try {
-    const { error } = updateFavoriteSchema.validate(req.body);
-    // валідація, якщо все добре error = undefined
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const { contactId } = req.params;
-    const result = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
-    if (!result) {
-      throw HttpError(404, "Contact not found"); // створили об'єкт помилки
-    }
-    res.json(result);
-  } catch (error) {
-    next(error);
+  const { error } = updateFavoriteSchema.validate(req.body);
+  // валідація, якщо все добре error = undefined
+  if (error) {
+    throw HttpError(400, error.message);
   }
+  const { contactId } = req.params;
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
+  if (!result) {
+    throw HttpError(404, "Contact not found"); // створили об'єкт помилки
+  }
+  res.json(result);
 };
 
 module.exports = {
@@ -78,5 +70,5 @@ module.exports = {
   addContact: ctrlWrapper(addContact),
   updateFavorite: ctrlWrapper(updateFavorite),
   removeContact: ctrlWrapper(removeContact),
-  updateById, // для прикладу залишив першочерговий стан
+  updateById: ctrlWrapper(updateById), // для прикладу залишив першочерговий стан
 };
