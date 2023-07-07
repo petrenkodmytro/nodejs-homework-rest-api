@@ -7,11 +7,12 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Set password for user"],
     },
     email: {
       type: String,
       match: emailRegexp,
+      unique: [true, "Email is required"], // при додаванні mongoose перевіряє чи не існує такого користувача
       required: true,
     },
     password: {
