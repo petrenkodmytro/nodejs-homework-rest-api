@@ -1,6 +1,8 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
+
+const authRouter = require("./routes/api/auth");
 const contactsRouter = require("./routes/api/contacts");
 
 // пакет для process.env шукає файл env і додає змінні оточення
@@ -18,6 +20,7 @@ app.use(cors());
 // мідлвара - парсер JSON данних у тілі запиту
 app.use(express.json());
 
+app.use("/api/auth", authRouter);
 app.use("/api/contacts", contactsRouter);
 
 // помилки 404
