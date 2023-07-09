@@ -12,8 +12,8 @@ const userSchema = new Schema(
     email: {
       type: String,
       match: emailRegexp,
-      unique: [true, "Email is required"], // при додаванні mongoose перевіряє чи не існує такого користувача
-      required: true,
+      unique: true, // при додаванні mongoose перевіряє чи не існує такого користувача
+      required: [true, "Email is required"],
     },
     password: {
       type: String,
