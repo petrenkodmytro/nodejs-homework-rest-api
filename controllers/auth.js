@@ -27,13 +27,14 @@ const register = async (req, res, next) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  
+
   // якщо не знайшли користувача за email
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
   }
   // перевірка пароля
   const passwordCompare = await bcrypt.compare(password, user.password);
+
   if (!passwordCompare) {
     throw HttpError(401, "Email or password is wrong");
   }
@@ -43,10 +44,41 @@ const login = async (req, res) => {
   };
   // створення token
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "20h" });
-  res.json({ token });
+  // записуємо в базу token коли користувач логіниться
+  await User.findByIdAndUpdate(user._id, { token });
+
+  res.json({
+    token,
+    user: {
+      email: user.email,
+      subscription: user.subscription,
+    },
+  });
+};
+
+const getCurrent = async (req, res) => {
+  console.log(req.user);
+  const { email, name, subscription } = req.user;
+  res.json({ email, name, subscription });
+};
+
+const logout = async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(_id, { token: "" });
+  res.status(204).json();
+};
+
+const updateSubscription = async (req, res) => {
+  console.log(req.user);
+  const { _id } = req.user;
+  const result = await User.findByIdAndUpdate(_id, req.body, { new: true });
+  res.json(result);
 };
 
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
+  getCurrent: ctrlWrapper(getCurrent),
+  logout: ctrlWrapper(logout),
+  updateSubscription: ctrlWrapper(updateSubscription),
 };

@@ -2,8 +2,14 @@ const { Contact, addSchema, updateFavoriteSchema } = require("../models/contact"
 const { HttpError, ctrlWrapper } = require("../helpers");
 
 const getListContacts = async (req, res) => {
-  // find - знаходить і повертає всі об'єкти з колекції
-  const result = await Contact.find({}, "-createdAt -updatedAt");
+  // контакти конкретного юзера
+  const { _id: owner } = req.user;
+  const { page = 1, limit = 10, favorite } = req.query;
+  // скільки треба пропустити з початку колекції
+  const skip = (page - 1) * limit;
+
+  const result = await Contact.find(favorite ? { owner, favorite } : { owner }, "-createdAt -updatedAt", { skip, limit }).populate("owner", "name email subscription");
+  // .populate("owner") - для поширення запиту, замість поля owner вставляємо об'єкт з відповідним id; "name email subscription" - поля які треба повернути
   res.json(result);
 };
 
@@ -23,7 +29,8 @@ const addContact = async (req, res) => {
   if (error) {
     throw HttpError(400, error.message);
   }
-  const result = await Contact.create(req.body);
+  const { _id: owner } = req.user;
+  const result = await Contact.create({ ...req.body, owner });
   res.status(201).json(result);
 };
 
