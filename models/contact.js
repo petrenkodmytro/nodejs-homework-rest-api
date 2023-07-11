@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const { handleMongooseError } = require("../middlewares");
+const { handleMongooseError } = require("../helpers");
 const Joi = require("joi");
 
 // опис вимог до об'єктів, що приходять від користувача (зразок proptypes)
@@ -31,6 +31,11 @@ const contactSchema = new Schema(
     favorite: {
       type: Boolean,
       default: false,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user", // з якої колекції записаний id
+      required: true,
     },
   },
   { versionKey: false, timestamps: true }
