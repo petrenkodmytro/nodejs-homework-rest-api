@@ -57,7 +57,6 @@ const login = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-  console.log(req.user);
   const { email, name, subscription } = req.user;
   res.json({ email, name, subscription });
 };
@@ -69,7 +68,6 @@ const logout = async (req, res) => {
 };
 
 const updateSubscription = async (req, res) => {
-  console.log(req.user);
   const { _id } = req.user;
   const result = await User.findByIdAndUpdate(_id, req.body, { new: true });
   res.json(result);
