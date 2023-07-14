@@ -19,6 +19,8 @@ app.use(cors());
 
 // мідлвара - парсер JSON данних у тілі запиту
 app.use(express.json());
+// мідлвара - якщо прийде запит на файли, то брати їх з папки public
+app.use(express.static("public"));
 
 app.use("/api/auth", authRouter);
 app.use("/api/contacts", contactsRouter);
