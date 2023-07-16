@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken"); // створення токена
 const gravatar = require("gravatar"); // створення аватарок
 const path = require("path");
 const fs = require("fs/promises");
+const Jimp = require("jimp");
 
 const { SECRET_KEY } = process.env;
 // шлях до папки з аватаркими
@@ -87,6 +88,13 @@ const updateAvatar = async (req, res) => {
   const filename = `${_id}_${originalname}`;
   // шлях переміщення
   const resultUpload = path.join(avatarsDir, filename);
+  // обробка аватарки 
+  const avatar = await Jimp.read(tempUpload);
+  avatar
+    .resize(250, 250) // resize
+    .quality(80) // set JPEG quality
+    .write(tempUpload); // save
+
   // з тимчасового місця переміщуємо в папку avatars
   await fs.rename(tempUpload, resultUpload);
   const avatarURL = path.join("avatars", filename);
