@@ -1,13 +1,14 @@
 const { User } = require("../models/user");
-const { HttpError, ctrlWrapper } = require("../helpers");
+const { HttpError, ctrlWrapper, sendEmail } = require("../helpers");
 const bcrypt = require("bcrypt"); // хешування
 const jwt = require("jsonwebtoken"); // створення токена
 const gravatar = require("gravatar"); // створення аватарок
 const path = require("path");
 const fs = require("fs/promises");
 const Jimp = require("jimp");
+const { nanoid } = require("nanoid");
 
-const { SECRET_KEY } = process.env;
+const { SECRET_KEY, BASE_URL } = process.env;
 // шлях до папки з аватаркими
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
@@ -23,12 +24,62 @@ const register = async (req, res, next) => {
   const hasPassword = await bcrypt.hash(password, 10);
   // видаємо аватарку при реєстрації
   const avatarURL = gravatar.url(email);
+  // записуємо код верефікації
+  const verificationToken = nanoid();
   // зберігаємо в захешованому вигляді
-  const newUser = await User.create({ ...req.body, password: hasPassword, avatarURL });
+  const newUser = await User.create({ ...req.body, password: hasPassword, avatarURL, verificationToken });
+
+  // створюємо листа
+  const verifyEmail = {
+    to: email,
+    subject: "Verify email",
+    html: `<a target="blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click verify email</a>`,
+  };
+  // відправляємо листа
+  await sendEmail(verifyEmail);
 
   res.status(201).json({
     emai: newUser.email,
     name: newUser.name,
+  });
+};
+
+const verifyEmail = async (req, res) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
+
+  if (!user) {
+    throw HttpError(404, "User not found");
+  }
+  // підтвердження верефікації
+  await User.findByIdAndUpdate(user._id, { verify: true, verificationToken: "" });
+
+  res.json({
+    message: "Email verify success",
+  });
+};
+
+const resendVerifyEmail = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw HttpError(404, "Email not found");
+  }
+  if (user.verify) {
+    throw HttpError(400, "Email alredy verified");
+  }
+  // створюємо листа
+  const verifyEmail = {
+    to: email,
+    subject: "Verify email",
+    html: `<a target="blank" href="${BASE_URL}/api/auth/verify/${user.verificationToken}">Click verify email</a>`,
+  };
+  // відправляємо листа
+  await sendEmail(verifyEmail);
+
+  res.json({
+    message: "Verify email send success",
   });
 };
 
@@ -39,6 +90,10 @@ const login = async (req, res) => {
   // якщо не знайшли користувача за email
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
+  }
+  // перевірка на підтвердження пошти
+  if (!user.verify) {
+    throw HttpError(401, "Email not verified");
   }
   // перевірка пароля
   const passwordCompare = await bcrypt.compare(password, user.password);
@@ -88,7 +143,7 @@ const updateAvatar = async (req, res) => {
   const filename = `${_id}_${originalname}`;
   // шлях переміщення
   const resultUpload = path.join(avatarsDir, filename);
-  // обробка аватарки 
+  // обробка аватарки
   const avatar = await Jimp.read(tempUpload);
   avatar
     .resize(250, 250) // resize
@@ -106,6 +161,8 @@ const updateAvatar = async (req, res) => {
 
 module.exports = {
   register: ctrlWrapper(register),
+  verifyEmail: ctrlWrapper(verifyEmail),
+  resendVerifyEmail: ctrlWrapper(resendVerifyEmail),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
