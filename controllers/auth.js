@@ -33,7 +33,7 @@ const register = async (req, res, next) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click to verify email</a>`,
+    html: `<a target="blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click to verify email${BASE_URL}</a>`,
   };
   // відправляємо листа
   await sendEmail(verifyEmail);
@@ -113,8 +113,12 @@ const login = async (req, res) => {
   res.json({
     token,
     user: {
+      name: user.name,
       email: user.email,
+      avatarURL: user.avatarURL,
       subscription: user.subscription,
+      verify: user.verify,
+      verificationToken: user.verificationToken,
     },
   });
 };
