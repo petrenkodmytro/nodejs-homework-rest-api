@@ -5,7 +5,7 @@ const Joi = require("joi");
 // опис вимог до об'єктів, що приходять від користувача (зразок proptypes)
 const addSchema = Joi.object({
   name: Joi.string().required(),
-  email: Joi.string().email(),
+  email: Joi.string().allow("").optional().email(),
   phone: Joi.string().required(),
   favorite: Joi.boolean().default(false),
 });
