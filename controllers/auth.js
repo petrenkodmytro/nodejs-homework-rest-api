@@ -33,7 +33,7 @@ const register = async (req, res, next) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="blank" href="petrenkodmytro.github.io/phone-book/${verificationToken}">Click to verify email</a>`,
+    html: `<a target="blank" href="https://petrenkodmytro.github.io/phone-book/${verificationToken}">Click to verify email</a>`,
   };
   // відправляємо листа
   await sendEmail(verifyEmail);
