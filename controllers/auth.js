@@ -74,7 +74,7 @@ const resendVerifyEmail = async (req, res) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="blank" href="petrenkodmytro.github.io/phone-book/${user.verificationToken}">Click verify email</a>`,
+    html: `<a target="blank" href="https://petrenkodmytro.github.io/phone-book/${user.verificationToken}">Click verify email</a>`,
   };
   // відправляємо листа
   await sendEmail(verifyEmail);
