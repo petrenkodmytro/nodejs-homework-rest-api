@@ -57,6 +57,7 @@ const verifyEmail = async (req, res) => {
 
   res.json({
     message: "Email verify success",
+    html: `<a target="blank" href="https://petrenkodmytro.github.io/phone-book/login">Sign UP to APP</a>`,
   });
 };
 
