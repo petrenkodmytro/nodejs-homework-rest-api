@@ -8,7 +8,7 @@ const fs = require("fs/promises");
 const Jimp = require("jimp");
 const { nanoid } = require("nanoid");
 
-const { SECRET_KEY } = process.env;
+const { SECRET_KEY, BASE_URL } = process.env;
 // шлях до папки з аватаркими
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
@@ -33,7 +33,7 @@ const register = async (req, res, next) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="blank" href="https://petrenkodmytro.github.io/phone-book/${verificationToken}">Click to verify email</a>`,
+    html: `<a target="blank" href="${BASE_URL}/verify/${verificationToken}">Click to verify email</a>`,
   };
   // відправляємо листа
   await sendEmail(verifyEmail);
@@ -74,7 +74,7 @@ const resendVerifyEmail = async (req, res) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="blank" href="https://petrenkodmytro.github.io/phone-book/${user.verificationToken}">Click verify email</a>`,
+    html: `<a target="blank" href="href="${BASE_URL}/verify/${user.verificationToken}">Click verify email</a>`,
   };
   // відправляємо листа
   await sendEmail(verifyEmail);
